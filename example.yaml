@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: test-pod
+spec:
+ affinity:
+ nodeAffinity:
+  requiredDuringSchedulingIgnoredDuringExecution:
+    nodeSelectorTerms:
+     - matchExpressions:
+       - key: kubernetes.io/hostname
+         operator: In
+         values:
+         - 10.10.0.21
+         - 10.10.0.22
+  preferredDuringSchedulingIgnoredDuringExecution:
+  - weight: 1
+     preference:
+     matchExpressions:
+     - key: kubernetes.io/hostname
+        operator: In
+        values:
+        - 10.10.0.21  
+ containers:
+ - image: nginx:1.7.9
+   name: test-container
+   resources:
+    requests:
+     memory: 2Gi
+     cpu: 1
+    limits:
+     memory: 4Gi
+     cpu: 2
+  volumeMounts:
+    - mountPath: /data
+      name: test-volume
+ volumes:
+ - k8ssVolume:
+    fsType: ext4
+    ReclaimPolicy: Delete
+    options:
+     size: 10G
+     bandwidth: 20MB
+     sharable: "false"
+    name: test-volume
